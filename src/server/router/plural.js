@@ -25,11 +25,17 @@ module.exports = function (db, name) {
   function expand (resource, e) {
     e && [].concat(e)
       .forEach(function (innerResource) {
-        var plural = pluralize(innerResource)
-        if (db.get(plural).value()) {
-          var prop = innerResource + 'Id'
-          resource[innerResource] = db.get(plural).getById(resource[prop]).value()
+        if (db.id(innerResource).value() !== 'id') {
+          var prop = db.id(innerResource).value()
+          resource[innerResource] = db.get(innerResource).getById(resource[prop], innerResource).value()
+        } else {
+          var plural = pluralize(innerResource)
+          if (db.get(plural).value()) {
+            var prop = innerResource + 'Id'
+            resource[innerResource] = db.get(plural).getById(resource[prop], plural).value()
+          }
         }
+
       })
   }
 
@@ -183,7 +189,7 @@ module.exports = function (db, name) {
     var _embed = req.query._embed
     var _expand = req.query._expand
     var id = utils.toNative(req.params.id)
-    var resource = db.get(name).getById(id).value()
+    var resource = db.get(name).getById(id, name).value()
 
     if (resource) {
       // Clone resource to avoid making changes to the underlying object
@@ -210,7 +216,7 @@ module.exports = function (db, name) {
     }
 
     var resource = db.get(name)
-      .insert(req.body)
+      .insert(req.body, name)
       .value()
 
     res.status(201)

@@ -23,6 +23,7 @@ module.exports = function (source) {
   // Create database
   var db
   if (_.isObject(source)) {
+    console.log('enter');
     db = low()
     db.setState(source)
   } else {
@@ -51,7 +52,7 @@ module.exports = function (source) {
 
   router.get('/db', showDatabase)
 
-  router.use(nested())
+  router.use(nested(db))
 
   // Create routes
   db.forEach(function (value, key) {

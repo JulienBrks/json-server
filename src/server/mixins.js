@@ -20,7 +20,7 @@ function getRemovable (db) {
           // Test if table exists
           if (db[refName]) {
             // Test if references is defined in table
-            var ref = _.getById(db[refName], value)
+            var ref = _.getById(db[refName], value, refName)
             if (_.isUndefined(ref)) {
               removable.push({name: collName, id: doc.id})
             }
@@ -35,9 +35,9 @@ function getRemovable (db) {
 
 // Return incremented id or uuid
 // Used to override underscore-db's createId with utils.createId
-function createId (coll) {
+function createId (coll, doc, resource) {
   var _ = this
-  var idProperty = _.__id()
+  var idProperty = _.__id(resource)
   if (_.isEmpty(coll)) {
     return 1
   } else {

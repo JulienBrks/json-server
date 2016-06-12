@@ -65,7 +65,7 @@ function createApp (source, object, routes, argv) {
     app.use(pause(argv.delay))
   }
 
-  router.db._.id = argv.id
+  router.db._.rewriteId = argv.id
   app.db = router.db
   app.use(router)
 
@@ -108,6 +108,11 @@ module.exports = function (argv) {
 
       console.log(chalk.gray('  Done'))
 
+      if (argv.id) {
+        if (/\.json/.test(argv.id)) {
+          argv.id = JSON.parse(fs.readFileSync(argv.id, 'utf-8').trim())
+        }
+      }
       // Create app and server
       app = createApp(source, data, routes, argv)
       server = app.listen(argv.port, argv.host)
@@ -136,6 +141,7 @@ module.exports = function (argv) {
       if (chunk.trim().toLowerCase() === 's') {
         var filename = 'db-' + Date.now() + '.json'
         var file = path.join(argv.snapshots, filename)
+        console.log(JSON.stringify(app.db))
         app
           .db
           .write(file)

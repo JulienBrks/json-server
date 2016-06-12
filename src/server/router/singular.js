@@ -6,6 +6,7 @@ module.exports = function (db, name) {
 
   function show (req, res, next) {
     res.locals.data = db.get(name).value()
+    console.log(res.locals.data);
     next()
   }
 
